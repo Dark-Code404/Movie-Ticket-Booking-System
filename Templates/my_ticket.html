@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}My Tickets{% endblock title %}
+
+{% block content %}
+<div class="container mt-5 text-black">
+    <h2>My Tickets</h2>
+    <div class="row">
+        {% for booking in bookings %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                
+                <div class="card-body">
+                    <h5 class="card-title">Show: {{ booking.show_name }}</h5><br>
+                    <p class="card-text">
+                    <strong>Showtime:</strong>  {{ booking.showtime }}<br><br>
+                    <strong>Date:</strong> {{ booking.show_date.date }}<br><br>
+                    <strong>Showtime:</strong> {{ booking.showtime.time }}<br><br>
+                    <strong>Seats:</strong> {{ booking.user_seat }}<br><br>
+                    <strong>Number of seats:</strong> {{ booking.total_seat }}<br><br>
+                    <strong>Total Price:</strong> ${{ booking.total_price }}<br><br>
+                    <strong>Cinema:</strong> {{ booking.cinema_name}}<br><br>
+                    <strong>Cinema location:</strong> {{ booking.cinema_location }}<br><br>
+                    
+                    
+                </p>
+                <a href="{% url 'download_ticket' booking_id=booking.id %}" class="btn btn-primary">Download Ticket</a>
+            </div>
+        </div>
+    </div>  
+    {% endfor %}
+    
+
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block title %}Showtime{% endblock title %}
+
+{% block content %}
+
+
+<style>
+    /* Modal container styling */
+    #trailerModal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    }
+
+    /* Modal content styling */
+    #trailerModal .trailer-modal-content {
+        background-color: #000;
+        margin: 10% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+         /* Adjust the width */
+        box-shadow: 0px 0px 10px #888;
+        border-radius: 8px;
+    }
+
+    /* Close button styling */
+    #trailerModal .close {
+        color: #fff;
+       align-items: center;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    #trailerModal .close:hover,
+    #trailerModal .close:focus {
+        color: #ccc;
+        text-decoration: none;
+    }
+
+    /* Iframe styling */
+    #trailerModal iframe {
+        width: 100%;
+        height: 725px;
+        border-radius: 8px;
+    }
+   
+</style>
+
+
+<div class="container mt-5">
+    {% if messages %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+                <strong class="text-danger">{{ message }}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="row mb-4">
+        <div class="col-lg-4 col-md-6 mb-3">
+            <img src="{{ movie.poster.url }}" class="img-fluid rounded" alt="Movie Poster">
+        </div>
+        <div class="col-lg-8 col-md-6">
+            <h2><strong>{{ movie.name }}</strong></h2>
+            <p><strong>Genre:</strong> {{ movie.genre }}</p>
+            <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+            <p><strong>Duration:</strong> {{ movie.duration }}</p>
+            <p><strong>Rating:</strong> {{ movie.rating }}</p>
+            
+            
+            
+            <div class="container mt-5">
+                <!-- Your existing content -->
+            
+                <button id="trailerButton">Watch Trailer</button><br><br>
+            
+                <!-- Custom Modal -->
+                <div id="trailerModal">
+                    <div class="trailer-modal-content">
+                        <span class="close">&times;</span>
+                        <iframe id="trailerIframe" src="" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+
+            
+        
+
+            <p><strong>Description:</strong> {{ movie.description }}</p>
+
+            <h4 class="mt-4">Actors</h4>
+            <ul class="list-unstyled">
+                {% for actor in movie.actors.all %}
+                <li class="d-flex align-items-center mb-3">
+                    {% if actor.photo %}
+                        <img src="{{ actor.photo.url }}" alt="{{ actor.name }}" class="rounded-circle me-3" style="width: 100px; height: 100px; object-fit: cover;">
+                    {% endif %}
+                    <div>
+                        <strong>{{ actor.name }}</strong><br>
+                        {% if actor.birth_date %}
+                            <small>Born: {{ actor.birth_date }}</small>
+                        {% endif %}
+                    </div>
+                </li>
+                {% empty %}
+                <li>No actors listed</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    {% if not is_upcoming %}
+        <!-- Available Dates -->
+        <h4 class="mt-4">Select a Date</h4>
+        <div class="list-group mb-5">
+            {% for date in available_dates %}
+            <a href="{% url 'showtime' mid=movie.mid %}?date={{ date.date|date:'Y-m-d' }}" class="list-group-item list-group-item-action {% if date.date|date:'Y-m-d' == selected_date %}active{% endif %}">
+                {{ date.date|date:"F j, Y" }}
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- Showtimes -->
+        {% if selected_date %}
+        <h4 class="mt-4">Available Showtimes for {{ selected_date|date:"F j, Y" }}</h4>
+        <div class="list-group">
+            {% for show in shows %}
+                <div class="mb-3">
+                    <h5><b>{{ show.cinema.name }}</b></h5>
+                    {% for slot in show.time.all %}
+                    <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-bs-toggle="modal" data-bs-target="#bookingModal" data-showtimeid="{{ slot.id }}">
+                        {{ slot.time }}
+                        <span class="badge bg-primary rounded-pill">${{ show.price }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% else %}
+        <!-- Upcoming Movie Details -->
+        <div class="alert alert-info mt-4" role="alert">
+            This movie is upcoming and will be available for booking soon. Check back later for available dates and showtimes.
+        </div>
+    {% endif %}
+
+    <!-- Booking Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-black" id="bookingModalLabel">Book Your Seats</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'book_show' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="showtime_id" id="showtime_id" value="">
+                        <input type="hidden" name="show_date" value="{{ selected_date }}">
+                        <input type="hidden" name="show_name" value="{{ movie.name }}">
+
+                        <div class="mb-3 text-black">
+                            <label for="seatSelect" class="form-label">Select Seats</label>
+                            <div class="row">
+                                <!-- Section A -->
+                                <div class="col-md-6">
+                                    {% for row in "ABCD" %}
+                                    <div class="row mb-2">
+                                        {% for col in "1234" %}
+                                        {% with seat=row|stringformat:"s"|add:col|stringformat:"s" %}
+                                        <div class="col">
+                                            <div class="form-check">
+                                                {% if seat in showtime_seats %}
+                                                    <input class="form-check-input" type="checkbox" value="{{ seat }}" id="{{ seat }}" name="seats" disabled>
+                                                    <label class="form-check-label text-muted" for="{{ seat }}">
+                                                        {{ seat }} (Booked)
+                                                    </label>
+                                                {% else %}
+                                                    <input class="form-check-input" type="checkbox" value="{{ seat }}" id="{{ seat }}" name="seats">
+                                                    <label class="form-check-label" for="{{ seat }}">
+                                                        {{ seat }}
+                                                    </label>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endwith %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <!-- Section B -->
+                                <div class="col-md-6">
+                                    {% for row in "ABCD" %}
+                                    <div class="row mb-2">
+                                        {% for col in "5678" %}
+                                        {% with seat=row|stringformat:"s"|add:col|stringformat:"s" %}
+                                        <div class="col">
+                                            <div class="form-check">
+                                                {% if seat in showtime_seats %}
+                                                    <input class="form-check-input" type="checkbox" value="{{ seat }}" id="{{ seat }}" name="seats" disabled>
+                                                    <label class="form-check-label text-muted" for="{{ seat }}">
+                                                        {{ seat }} (Booked)
+                                                    </label>
+                                                {% else %}
+                                                    <input class="form-check-input" type="checkbox" value="{{ seat }}" id="{{ seat }}" name="seats">
+                                                    <label class="form-check-label" for="{{ seat }}">
+                                                        {{ seat }}
+                                                    </label>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endwith %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+
+
+
+
+                        <button type="submit" class="btn btn-primary">Book Now</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+  
+        function getYouTubeVideoId(url) {
+            var match = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            return match ? match[1] : null;
+        }
+
+        var trailerButton = document.getElementById("trailerButton");
+        var trailerModal = document.getElementById("trailerModal");
+        var closeBtn = trailerModal.querySelector(".close");
+        var iframe = document.getElementById("trailerIframe");
+
+        trailerButton.onclick = function() {
+            var fullUrl = "{{ movie.trailer }}";
+            var videoId = getYouTubeVideoId(fullUrl);
+            if (videoId) {
+                iframe.src = "https://www.youtube.com/embed/" + videoId;
+                trailerModal.style.display = "block";
+            } else {
+                console.error("Invalid YouTube URL");
+            }
+        }
+
+        closeBtn.onclick = function() {
+            trailerModal.style.display = "none";
+            iframe.src = ""; 
+        }
+
+        window.onclick = function(event) {
+            if (event.target == trailerModal) {
+                trailerModal.style.display = "none";
+                iframe.src = ""; 
+            }
+        }
+
+
+        var bookingModal = document.getElementById('bookingModal');
+        bookingModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var showtimeId = button.getAttribute('data-showtimeid');
+            var inputShowtimeId = document.getElementById('showtime_id');
+            inputShowtimeId.value = showtimeId;
+        });
+    });
+
+ 
+
+
+    
+    
+</script>
+
+{% endblock content %}

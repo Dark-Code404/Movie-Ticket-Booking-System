@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}
+Booking Confirmation
+{% endblock title %}
+
+{% block pagename %}Booking Confirmation{% endblock pagename %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">Booking Confirmation</div>
+                <div class="card-body">
+                    <h5 class="card-title">Thank you for your booking!</h5>
+                    <p class="card-text">Movie: {{ booking.shows.movie.name }}</p>
+                    <p class="card-text">Showtime: {{ booking.shows.time }}</p>
+                    <p class="card-text">Seats: {{ booking.user_seat }}</p>
+                    <p class="card-text">Cinema: {{ booking.shows.cinema.name }}</p>
+                    <a href="{% url 'home' %}" class="btn btn-primary">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

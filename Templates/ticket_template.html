@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket</title>
+    <style>
+        /* Add your styles for the PDF here */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .ticket {
+            border: 2px dashed #333;
+            padding: 20px;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="ticket">
+        <h1>{{ booking.show_name }}</h1>
+        <p><strong>Date:</strong> {{ booking.show_date.seats}}</p>
+        <p><strong>Showtime:</strong> {{ booking.showtime.time }}</p>
+        <p><strong>Seats:</strong> {{ booking.user_seat }}</p>
+        <p><strong>Number of seats:</strong> {{ booking.total_seat }}</p>
+        <p><strong>Total Price:</strong> ${{ booking.total_price }}</p>
+        <p><strong>Cinema:</strong> {{ booking.cinema_name }}</p>
+        <p><strong>Cinema Location:</strong> {{ booking.cinema_location }}</p>
+        
+    </div>
+</body>
+</html>

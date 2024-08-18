@@ -1,0 +1,40 @@
+<!-- user_profile.html -->
+{% extends "base.html" %}
+{% load static %}
+{% block pagename %}<h1>Profile</h1>{% endblock pagename %}
+
+{% block content %}
+<div class="container mt-5">
+    
+        {% if messages %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {% for message in messages %}
+                    <strong class="text-danger">{{ message }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {% endfor %}
+            </div>
+        {% endif %}
+    <div class="d-flex align-items-center">
+        <div class="profile-image-container" style="width: 200px; height: 200px; border-radius: 50%; background-color: #f0f0f0; display: flex; justify-content: center; font-size: 36px;">
+            {% if user_profile.profile_image %}
+                <img src="{{ user_profile.profile_image.url }}" alt="Profile Image" class="img-thumbnail" width="200" style="border-radius: 50%;">
+            {% else %}
+                <span>{{user_profile.username.username }}</span>
+            {% endif %}
+        </div>
+        
+    </div>
+    <div>
+        <p><strong>First Name:</strong> {{ user_profile.first_name }}</p>
+        <p><strong>Last Name:</strong> {{ user_profile.last_name }}</p>
+        <p><strong>Username:</strong> {{ user_profile.user.username }}</p>
+        <p><strong>Email:</strong> {{ user_profile.user.email }}</p>
+        <p><strong>DOB:</strong> {{ user_profile.dob }}</p>
+        <p><strong>Phone No:</strong> {{ user_profile.mobile }}</p>
+        <p><strong>Gender:</strong> {{ user_profile.gender }}</p>
+    </div>
+    <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+    <a href="{% url 'change_password' %}" class="btn btn-danger">Change Password</a>
+
+</div>
+{% endblock %}

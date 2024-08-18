@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block pagename %}
+<h1 data-aos="fade-up">Register</h1>
+{% endblock pagename %}
+
+{% block content %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong style="color: rgb(255, 0, 0);">{{ message }}</strong> 
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <form action="{% url 'register' %}" method="post">
+    {% csrf_token %}
+    
+    <div class="form-group">
+      <label for="uname">Username</label>
+      <input type="text" class="form-control" id="uname" name="uname" required>
+    </div><br>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" id="email" name="email" required>
+    </div><br>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" class="form-control" id="password" name="passw" required>
+    </div><br>
+
+    <div class="form-group">
+      <label for="passwo">Confirm Password</label>
+      <input type="password" class="form-control" id="passwo" name="passwo" required>
+    </div><br>
+
+    <div class="form-group">
+      <label for="mobile">Mobile Number</label>
+      <input type="tel" class="form-control" id="mobile" name="mobile" required>
+    </div><br>
+
+    <div class="form-group">
+      <label for="gender">Gender</label>
+      <select class="form-control" id="gender" name="gender" required>
+        <option value="">Select</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+    </div><br>
+
+    <div class="form-group">
+      <label for="dob">Date of Birth</label>
+      <input type="date" class="form-control" id="dob" name="dob" required>
+    </div><br>
+
+    <button class="btn btn-success text-white" type="submit">Register</button>
+    <br><br>
+    Already a user? <a href="{% url 'login' %}">Login</a>
+    <br>
+  </form>
+{% endblock content %}
