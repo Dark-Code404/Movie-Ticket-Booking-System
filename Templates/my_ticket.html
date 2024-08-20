@@ -1,35 +1,46 @@
 {% extends "base.html" %}
-{% block title %}My Tickets{% endblock title %}
+{% block title %}My Tickets{% endblock %}
 
 {% block content %}
+{% if messages %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {% for message in messages %}
+    <strong class="text-danger">{{ message }}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {% endfor %}
+</div>
+{% endif %}
 <div class="container mt-5 text-black">
-    <h2>My Tickets</h2>
+    
     <div class="row">
         {% for booking in bookings %}
         <div class="col-md-4">
             <div class="card mb-4">
-                
                 <div class="card-body">
-                    <h5 class="card-title">Show: {{ booking.show_name }}</h5><br>
+                    <h5 class="card-title">Show: {{ booking.show_name }}</h5>
                     <p class="card-text">
-                    <strong>Showtime:</strong>  {{ booking.showtime }}<br><br>
-                    <strong>Date:</strong> {{ booking.show_date.date }}<br><br>
-                    <strong>Showtime:</strong> {{ booking.showtime.time }}<br><br>
-                    <strong>Seats:</strong> {{ booking.user_seat }}<br><br>
-                    <strong>Number of seats:</strong> {{ booking.total_seat }}<br><br>
-                    <strong>Total Price:</strong> ${{ booking.total_price }}<br><br>
-                    <strong>Cinema:</strong> {{ booking.cinema_name}}<br><br>
-                    <strong>Cinema location:</strong> {{ booking.cinema_location }}<br><br>
+                        <strong>Showtime:</strong> {{ booking.showtime.time }}<br><br>
+                        <strong>Date:</strong> {{ booking.show_date.date }}<br><br>
+                        <strong>Seats:</strong> {{ booking.user_seat }}<br><br>
+                        <strong>Number of seats:</strong> {{ booking.total_seat }}<br><br>
+                        <strong>Total Price:</strong> ${{ booking.total_price }}<br><br>
+                        <strong>Cinema:</strong> {{ booking.cinema_name }}<br><br>
+                        <strong>Cinema Location:</strong> {{ booking.cinema_location }}<br><br>
+                    </p>
+                    <a href="{% url 'download_ticket' booking_id=booking.id %}" class="btn btn-primary">Download Ticket</a>
                     
-                    
-                </p>
-                <a href="{% url 'download_ticket' booking_id=booking.id %}" class="btn btn-primary">Download Ticket</a>
+                    <!-- Delete Button -->
+                    <form method="post" class="mt-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                        <button type="submit" name="delete_ticket" class="btn btn-danger">Delete Ticket</button>
+                    </form>
+                </div>
             </div>
-        </div>
-    </div>  
-    {% endfor %}
-    
-
+        </div>  
+        {% empty %}
+        <p>No tickets found.</p>
+        {% endfor %}
     </div>
 </div>
-{% endblock content %}
+{% endblock %}

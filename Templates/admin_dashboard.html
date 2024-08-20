@@ -3,9 +3,17 @@
 {% block title %}Admin Dashboard{%  endblock %}
 
 {% block content %}
+{% if messages %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {% for message in messages %}
+    <strong class="text-danger">{{ message }}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {% endfor %}
+</div>
+{% endif %}
 <div class="container mt-5 text-white">
     <h1>Admin Dashboard</h1>
-    <h3>Total Income: ${{ total_income }}</h3>
+    <h3>Total Income: ${{ totalIncome }}</h3>
 
     <h2>Booking History</h2>
     <table class="table table-striped text-white">

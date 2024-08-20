@@ -56,16 +56,16 @@
 </style>
 
 
-<div class="container mt-5">
-    {% if messages %}
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            {% for message in messages %}
-                <strong class="text-danger">{{ message }}</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            {% endfor %}
-        </div>
-    {% endif %}
 
+{% if messages %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {% for message in messages %}
+    <strong class="text-danger">{{ message }}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {% endfor %}
+</div>
+{% endif %}
+<div class="container mt-5">
     <div class="row mb-4">
         <div class="col-lg-4 col-md-6 mb-3">
             <img src="{{ movie.poster.url }}" class="img-fluid rounded" alt="Movie Poster">
@@ -96,7 +96,7 @@
             
         
 
-            <p><strong>Description:</strong> {{ movie.description }}</p>
+            <p><strong>Description:</strong> {{ movie.description }}</p><br>
 
             <h4 class="mt-4">Actors</h4>
             <ul class="list-unstyled">
@@ -116,6 +116,16 @@
                 <li>No actors listed</li>
                 {% endfor %}
             </ul>
+
+
+
+           
+
+
+
+
+
+
         </div>
     </div>
 
@@ -173,14 +183,14 @@
                             <label for="seatSelect" class="form-label">Select Seats</label>
                             <div class="row">
                                 <!-- Section A -->
-                                <div class="col-md-6">
-                                    {% for row in "ABCD" %}
+                                <div class="col-md-6">  
+                                    {% for row in seats_row %}
                                     <div class="row mb-2">
-                                        {% for col in "1234" %}
+                                        {% for col in seats_column %}
                                         {% with seat=row|stringformat:"s"|add:col|stringformat:"s" %}
                                         <div class="col">
                                             <div class="form-check">
-                                                {% if seat in showtime_seats %}
+                                                {% if showtime_id and seat in showtime_seats.showtime_id %}
                                                     <input class="form-check-input" type="checkbox" value="{{ seat }}" id="{{ seat }}" name="seats" disabled>
                                                     <label class="form-check-label text-muted" for="{{ seat }}">
                                                         {{ seat }} (Booked)
@@ -198,32 +208,7 @@
                                     </div>
                                     {% endfor %}
                                 </div>
-                                <!-- Section B -->
-                                <div class="col-md-6">
-                                    {% for row in "ABCD" %}
-                                    <div class="row mb-2">
-                                        {% for col in "5678" %}
-                                        {% with seat=row|stringformat:"s"|add:col|stringformat:"s" %}
-                                        <div class="col">
-                                            <div class="form-check">
-                                                {% if seat in showtime_seats %}
-                                                    <input class="form-check-input" type="checkbox" value="{{ seat }}" id="{{ seat }}" name="seats" disabled>
-                                                    <label class="form-check-label text-muted" for="{{ seat }}">
-                                                        {{ seat }} (Booked)
-                                                    </label>
-                                                {% else %}
-                                                    <input class="form-check-input" type="checkbox" value="{{ seat }}" id="{{ seat }}" name="seats">
-                                                    <label class="form-check-label" for="{{ seat }}">
-                                                        {{ seat }}
-                                                    </label>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        {% endwith %}
-                                        {% endfor %}
-                                    </div>
-                                    {% endfor %}
-                                </div>
+                               
                             </div>
                         </div>
                         
@@ -282,7 +267,44 @@
             var showtimeId = button.getAttribute('data-showtimeid');
             var inputShowtimeId = document.getElementById('showtime_id');
             inputShowtimeId.value = showtimeId;
+    
+            // Load the seats dynamically without refreshing the page
+            loadSeats(showtimeId);
+    
+            // Show the modal
+            var bootstrapModal = new bootstrap.Modal(bookingModal);
+            bootstrapModal.show();
         });
+
+
+
+
+
+        function loadSeats(showtimeId) {
+            // Make an AJAX call to get the booked seats for the selected showtime
+            fetch(`{{ request.path }}?showtime_id=${showtimeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update the seat selection UI based on the fetched data
+                    updateSeatSelection(data.showtime_seats);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    
+        function updateSeatSelection(bookedSeats) {
+            var checkboxes = document.querySelectorAll('input[name="seats"]');
+            checkboxes.forEach(function (checkbox) {
+                if (bookedSeats.includes(checkbox.value)) {
+                    checkbox.disabled = true;
+                    checkbox.nextElementSibling.innerHTML = `${checkbox.value} (Booked)`;
+                    checkbox.nextElementSibling.classList.add('text-muted');
+                } else {
+                    checkbox.disabled = false;
+                    checkbox.nextElementSibling.innerHTML = checkbox.value;
+                    checkbox.nextElementSibling.classList.remove('text-muted');
+                }
+            });
+        }
     });
 
  

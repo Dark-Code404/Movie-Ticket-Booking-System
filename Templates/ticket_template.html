@@ -22,7 +22,16 @@
     </style>
 </head>
 <body>
-    <div class="ticket">
+    {% if messages %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {% for message in messages %}
+    <strong class="text-danger">{{ message }}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {% endfor %}
+</div>
+{% endif %}
+
+    <div class="ticket text-white">
         <h1>{{ booking.show_name }}</h1>
         <p><strong>Date:</strong> {{ booking.show_date.seats}}</p>
         <p><strong>Showtime:</strong> {{ booking.showtime.time }}</p>

@@ -12,11 +12,7 @@
         {% endblock title %}</title>
     <meta content="" name="description" />
     <meta content="" name="keywords" />
-
-    <!-- Favicons -->
-
-
-    <!-- Google Fonts -->
+ 
     <link
         href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
         rel="stylesheet" />
@@ -52,7 +48,10 @@
                     {% if request.user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'user_profile' %}">Profile</a>
-                        </li>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="{% url 'my_ticket' %}">My Bookings</a>
+                </li>
                         {% if user.is_superuser %}
                              <li class="nav-item">
                                  <a class="nav-link" href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
@@ -96,8 +95,7 @@
             {% endblock content %}
         </div>
     </section>
-
-    <!-- ======= Hero Section ======= -->
+ 
     {% block body %}
 
     {% endblock body %}
@@ -105,12 +103,12 @@
 
 
 
-    <!-- End Hero -->
+  
 
     <main id="main"></main>
 
    
-    <!-- End Footer -->
+ 
 
     <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
             class="bi bi-arrow-up-short"></i></a>

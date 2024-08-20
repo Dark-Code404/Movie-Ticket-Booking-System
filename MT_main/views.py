@@ -3,7 +3,6 @@ from MT_main.models import *
 from django.contrib.auth.decorators import *
 from django.contrib import messages
 from datetime import datetime
-
 from django.template.loader import get_template
 from django.http import HttpResponse
 from xhtml2pdf import pisa
@@ -17,42 +16,42 @@ def is_admin(user):
 @login_required(login_url='/auth/login/')
 @user_passes_test(is_admin, login_url='/')  
 def admin_dashboard(request):
-    # Retrieve all bookings with related information for efficient queries
+    
     bookings = Bookings.objects.all().select_related('showtime', 'show_date', 'user')
 
-    # Calculate total income from bookings
-    total_income = sum(
+
+    totalIncome = sum(
         booking.total_price for booking in bookings
     )
 
-    # Prepare context for the template
+   
     context = {
         'bookings': bookings,
-        'total_income': total_income,
+        'totalIncome': totalIncome,
     }
 
-    # Render the template with booking data
+
     return render(request, 'admin_dashboard.html', context)
 
 def home(request):
   
     cinemas = Cinemas.objects.all()
 
-    # Get the search query from the GET parameters
+    
     search_query = request.GET.get('search', '')
 
-    # Filter movies based on their status and search query
+    
     if search_query:
-        now_showing_movies = Movies.objects.filter(nowshowing=True, name__icontains=search_query)
+        now_showing = Movies.objects.filter(nowshowing=True, name__icontains=search_query)
         upcoming_movies = Movies.objects.filter(upcoming=True, name__icontains=search_query)
     else:
-        now_showing_movies = Movies.objects.filter(nowshowing=True)
+        now_showing = Movies.objects.filter(nowshowing=True)
         upcoming_movies = Movies.objects.filter(upcoming=True)
 
-    # Pass both sets of movies and the search query to the template
+  
     context = {
         'cinemas': cinemas,
-        'now_showing_movies': now_showing_movies,
+        'now_showing': now_showing,
         'upcoming_movies': upcoming_movies,
         'search_query': search_query,
     }
@@ -67,31 +66,52 @@ def showtime(request, mid):
     
     is_upcoming = movie.upcoming
 
+    seats_row=['A',]
+    seats_column=['1','2','3','4','5']
+
     available_dates = set()
+    showtime_seats = {}
     if not is_upcoming:
         for show in shows:
             available_dates.update(show.available_date.all())
 
         selected_date = request.GET.get('date')
+        showtime_id=request.GET.get('showtime_id')
 
         if selected_date:
             shows = shows.filter(available_date__date=selected_date)
 
-        showtime_seats = {}
-        for show in shows:
-            for slot in show.time.all():
-                bookings = Bookings.objects.filter(showtime=slot)
-                booked_seats = []
-                for booking in bookings:
-                    booked_seats.extend(booking.user_seat_as_list)
-                showtime_seats[slot.id] = booked_seats
+        if showtime_id:
+            selected_showtime=get_object_or_404(ShowTime,pk=showtime_id)
+            bookings=Bookings.objects.filter(showtime=selected_showtime)
+            booked_seats=[]
+            for booking in bookings:
+                booked_seats.extend(booking.user_seat_as_list)
+            showtime_seats[showtime_id]=booked_seats
+
+        else:
+
+
+
+
+
+            for show in shows:
+                for slot in show.time.all():
+                    bookings = Bookings.objects.filter(showtime=slot)
+                    booked_seats = []
+                    for booking in bookings:
+                        booked_seats.extend(booking.user_seat_as_list)
+                    showtime_seats[slot.id] = booked_seats
     else:
         available_dates = []
         selected_date = None
         showtime_seats = {}
 
-    # Assuming you want to pass the cinema name of the first showtime
+   
     cinema_name = shows.first().cinema.name if shows.exists() else ''
+
+    print(f"showtime seats : {showtime_seats} ")
+    print(f"showtime id : {showtime_id} ")
 
     return render(request, 'showtime.html', {
         'movie': movie,
@@ -99,8 +119,11 @@ def showtime(request, mid):
         'selected_date': selected_date,
         'shows': shows,
         'showtime_seats': showtime_seats,
+        'showtime_id':showtime_id,
         'is_upcoming': is_upcoming,
         'cinema_name': cinema_name,  
+        'seats_row':seats_row,
+        'seats_column':seats_column
     })
 
 
@@ -146,8 +169,19 @@ def book_show(request):
             return redirect('showtime', mid=shows_details.movie.mid)
 
         total_price = shows_details.price * len(selected_seats)
+
+        if shows_details.available_seats<len(selected_seats):
+            messages.error(request,"Not enough seat")
+            return redirect('showtime',mid=shows_details.movie.mid)
         
-        # Create the booking and save the show name
+
+
+        shows_details.available_seats-=len(selected_seats)
+        shows_details.save()
+
+
+        
+        
         booking = Bookings.objects.create(
             user=user,
             showtime=showtime,
@@ -174,12 +208,12 @@ def book_show(request):
 def download_ticket(request, booking_id):
     booking = get_object_or_404(Bookings, pk=booking_id, user=request.user)
 
-    # Load the template for the ticket
+    
     template = get_template('ticket_template.html')
     context = {'booking': booking}
     html = template.render(context)
 
-    # Generate the PDF
+    
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="ticket_{booking.id}.pdf"'
     pisa_status = pisa.CreatePDF(html, dest=response)
@@ -190,18 +224,33 @@ def download_ticket(request, booking_id):
     return response
 
 
+
+
 @login_required(login_url='/auth/login/')
 def my_tickets(request):
-    # Get all tickets booked by the user
-    shows_details_prefetch = Prefetch(
-        'showtime__shows_details_set', 
-        queryset=Screening.objects.select_related('cinema')
+    if request.method == 'POST' and 'delete_ticket' in request.POST:
+        booking_id = request.POST.get('booking_id')
+        booking = get_object_or_404(Bookings, pk=booking_id, user=request.user)
+        booking.is_visible = False  
+        booking.save()
+        messages.success(request, "Your booking has been successfully removed from your view.")
+        return redirect('my_ticket')
+
+    # Query to get only visible bookings
+    bookings = Bookings.objects.filter(user=request.user, is_visible=True).select_related(
+        'showtime',
+        'show_date'
+    ).prefetch_related(
+        Prefetch('showtime__screening_set')
     )
 
-    bookings = Bookings.objects.filter(user=request.user).prefetch_related(shows_details_prefetch)
+    
+    
 
     context = {
         'bookings': bookings,
+        
+      
     }
     return render(request, 'my_ticket.html', context)
 
@@ -213,5 +262,21 @@ def my_tickets(request):
 
 
 
+
+
 def contact(request):
+
+    if request.method == "POST":
+
+        name=request.POST.get('name')
+        email=request.POST.get('email')
+        subject=request.POST.get('subject')
+        message=request.POST.get('message')
+        try:
+            Contact.objects.create(name=name,email=email,subject=subject,message=message)
+            messages.error(request,f"Contact submitted successfully  ")
+
+        except Exception as e:
+            messages.error(request,f"Contact not submitted successfully : {e}")
+
     return render(request, 'contact.html')
