@@ -11,13 +11,14 @@
 </div>
 {% endif %}
 <div class="container mt-5 text-black">
+    <br><br>
     
     <div class="row">
         {% for booking in bookings %}
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Show: {{ booking.show_name }}</h5>
+                    <h5 class="card-title"><strong>Show:</strong> {{ booking.show_name }}</h5>
                     <p class="card-text">
                         <strong>Showtime:</strong> {{ booking.showtime.time }}<br><br>
                         <strong>Date:</strong> {{ booking.show_date.date }}<br><br>

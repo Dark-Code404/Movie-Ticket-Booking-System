@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% block title %}{% endblock title %}
 
-{% block pagename %}<h1>Contact us</h1>{% endblock pagename %}
+
 
 {% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100 w-50">
+  <div class="col-md-4">
 {% if messages %}
 <div class="alert alert-warning alert-dismissible fade show" role="alert">
     {% for message in messages %}
@@ -35,9 +37,9 @@
     
 
 
-    <div class="form-group">
+    <div class="form-group ">
       <label for="message">Message</label>
-      <textarea name="message" class="form-control"></textarea>
+      <textarea name="message" class="form-control "></textarea>
     </div><br>
 
     <button class="btn btn-success text-white" type="submit">Submit</button>
@@ -45,6 +47,8 @@
     
     <br>
   </form>
+</div>
+</div>
 
 
 

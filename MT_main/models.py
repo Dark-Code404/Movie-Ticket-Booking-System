@@ -2,6 +2,7 @@ from django.utils.dateformat import format
 from django.contrib.auth.models import User
 from django.db import models
 
+
 class Cinemas(models.Model):
     cid = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
@@ -37,18 +38,18 @@ class Director(models.Model):
 class Movies(models.Model):
     mid = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
-    trailer = models.URLField(max_length=300, default="null")
-    release_date = models.CharField(max_length=20, default="null")
+    trailer = models.URLField(max_length=300, default="",null=True,blank=True)
+    release_date = models.CharField(max_length=20, default="",null=True)
     description = models.TextField()
     poster = models.ImageField(upload_to='movies', default="")
     genre = models.CharField(max_length=50, default="Action | Comedy | Romance")
     duration = models.CharField(max_length=10, default="2hr 45min")
-    rating = models.DecimalField(max_digits=3, decimal_places=1)
+    rating = models.DecimalField(max_digits=3, decimal_places=1,default="4")
     actors = models.ManyToManyField(Actor, related_name='movies', blank=True)
     director = models.ForeignKey(Director,on_delete=models.CASCADE,null=True,blank=True)
     upcoming=models.BooleanField(default=False)
     nowshowing=models.BooleanField(default=False)
-
+    
 
     def __str__(self):
         return self.name
@@ -83,7 +84,8 @@ class Screening(models.Model):
 
 class Bookings(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    show_name = models.CharField(max_length=200, null=True)  
+    show_name = models.CharField(max_length=200, null=True) 
+    screen=models.ForeignKey(Screening, on_delete=models.CASCADE,null=True)
     showtime = models.ForeignKey(ShowTime, on_delete=models.CASCADE, null=True)
     user_seat = models.CharField(max_length=300, null=True)
     show_date = models.ForeignKey(ShowDate, on_delete=models.CASCADE, null=True)

@@ -35,7 +35,7 @@
     #trailerModal .close {
         color: #fff;
        align-items: center;
-        font-size: 40px;
+        font-size: 60px;
         font-weight: bold;
         cursor: pointer;
     }
@@ -65,12 +65,13 @@
     {% endfor %}
 </div>
 {% endif %}
-<div class="container mt-5">
-    <div class="row mb-4">
+<br><br>
+<div class="container mt-5"  >
+    <div class="row mb-4" >
         <div class="col-lg-4 col-md-6 mb-3">
-            <img src="{{ movie.poster.url }}" class="img-fluid rounded" alt="Movie Poster">
+            <img src="{{ movie.poster.url }}" class="img-fluid rounded" alt="Movie Poster " ">
         </div>
-        <div class="col-lg-8 col-md-6">
+        <div class="col-lg-8 col-md-6" >
             <h2><strong>{{ movie.name }}</strong></h2>
             <p><strong>Genre:</strong> {{ movie.genre }}</p>
             <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
@@ -96,14 +97,14 @@
             
         
 
-            <p><strong>Description:</strong> {{ movie.description }}</p><br>
+            <p><strong>Description:</strong> {{ movie.description }}</p><br><br><br>
 
-            <h4 class="mt-4">Actors</h4>
-            <ul class="list-unstyled">
+            <h4 class="mt-4"><strong>Actors</strong></h4><br><br>
+            <div class="row">
                 {% for actor in movie.actors.all %}
-                <li class="d-flex align-items-center mb-3">
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-3 d-flex align-items-center">
                     {% if actor.photo %}
-                        <img src="{{ actor.photo.url }}" alt="{{ actor.name }}" class="rounded-circle me-3" style="width: 100px; height: 100px; object-fit: cover;">
+                        <img src="{{ actor.photo.url }}" alt="{{ actor.name }}" class="rounded-circle me-3" style="width: 150px; height: 150px; object-fit: cover;">
                     {% endif %}
                     <div>
                         <strong>{{ actor.name }}</strong><br>
@@ -111,11 +112,33 @@
                             <small>Born: {{ actor.birth_date }}</small>
                         {% endif %}
                     </div>
-                </li>
+                </div>
                 {% empty %}
-                <li>No actors listed</li>
+                <div class="col-12">
+                    <p>No actors listed</p>
+                </div>
                 {% endfor %}
-            </ul>
+            </div><br><br>
+            
+
+
+            <h4 class="mt-4"><strong>Director</strong></h4><br><br>
+            <div class="row">
+                {% if movie.director %}
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-3 d-flex align-items-center">
+                    {% if movie.director.photo %}
+                        <img src="{{ movie.director.photo.url }}" alt="{{ director.name }}" class="rounded-circle me-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% endif %}
+                    <div>
+                        <strong>{{ movie.director.name }}</strong><br>
+                  
+                        
+                    </div>
+                </div>
+                {% else %}
+                <li>No actors listed</li>
+                {% endif %}
+            </div>
 
 
 
@@ -178,6 +201,7 @@
                         <input type="hidden" name="showtime_id" id="showtime_id" value="">
                         <input type="hidden" name="show_date" value="{{ selected_date }}">
                         <input type="hidden" name="show_name" value="{{ movie.name }}">
+                        <input type="hidden" name="movie_id" value="{{ movie.mid }}">
 
                         <div class="mb-3 text-black">
                             <label for="seatSelect" class="form-label">Select Seats</label>
@@ -211,9 +235,6 @@
                                
                             </div>
                         </div>
-                        
-
-
 
 
                         <button type="submit" class="btn btn-primary">Book Now</button>

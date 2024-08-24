@@ -1,35 +1,40 @@
 {% extends "base.html" %}
 
-{% block pagename %}
-<h1 data-aos="fade-up">Login</h1>
-{% endblock pagename %}
 
 {% block content %}
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong style="color: red;">{{ message }}</strong> 
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="d-flex justify-content-center align-items-center vh-100 w-50">
+  <div class="col-md-4">
+    {% block pagename %}
+    <h1 data-aos="fade-up">Login</h1>
+    {% endblock pagename %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <strong style="color: red;">{{ message }}</strong> 
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form action="{% url 'login' %}" method="post">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label for="email">Username or Email</label>
+        <input type="text" class="form-control" id="email" name="email" required>
+      </div><br>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="passw" required>
+      </div><br>
+
+      <button class="btn btn-success text-white w-50" type="submit">Login</button>
+      <br><br>
+      <div class="text-center">
+        Not a user? <a href="{% url 'register' %}">Register</a>
       </div>
-    {% endfor %}
-  {% endif %}
-
-  <form action="{% url 'login' %}" method="post">
-    {% csrf_token %}
-    
-    <div class="form-group">
-      <label for="identifier">Username or Email</label>
-      <input type="text" class="form-control" id="identifier" name="email" required>
-    </div><br>
-
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" class="form-control" id="password" name="passw" required>
-    </div><br>
-
-    <button class="btn btn-success text-white" type="submit">Login</button>
-    <br><br>
-    Not a user? <a href="{% url 'register' %}">Register</a>
-    <br>
-  </form>
+    </form>
+  </div>
+</div>
 {% endblock content %}

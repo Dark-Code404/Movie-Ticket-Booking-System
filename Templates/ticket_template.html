@@ -29,10 +29,11 @@
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     {% endfor %}
 </div>
+
 {% endif %}
 
     <div class="ticket text-white">
-        <h1>{{ booking.show_name }}</h1>
+        <p>{{ booking.show_name }}</p>
         <p><strong>Date:</strong> {{ booking.show_date.seats}}</p>
         <p><strong>Showtime:</strong> {{ booking.showtime.time }}</p>
         <p><strong>Seats:</strong> {{ booking.user_seat }}</p>

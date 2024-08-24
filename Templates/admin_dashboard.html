@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Dashboard{%  endblock %}
+{% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
 {% if messages %}
@@ -11,36 +11,39 @@
     {% endfor %}
 </div>
 {% endif %}
-<div class="container mt-5 text-white">
-    <h1>Admin Dashboard</h1>
+
+<div class="container mt-5 text-white"><br><br>
+    <br><br><br><br><h1 class="mb-4">Admin Dashboard</h1>
     <h3>Total Income: ${{ totalIncome }}</h3>
 
-    <h2>Booking History</h2>
-    <table class="table table-striped text-white">
-        <thead  >
-            <tr>
-                <th>User</th>
-                <th>Showtime</th>
-                <th>Date</th>
-                <th>Seats</th>
-                <th>Total Price</th>
-            </tr>
-        </thead>
-        <tbody >
-            {% for booking in bookings %}
-            <tr class="text-white">
-                <td class="text-white">{{ booking.user.username }}</td>
-                <td>{{ booking.showtime }}</td>
-                <td>{{ booking.show_date.date }}</td>
-                <td>{{ booking.user_seat_as_list|join:", " }}</td>
-                <td>${{ booking.total_price }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5">No bookings found</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <h2 class="mt-5">Booking History</h2>
+    <div class="table-responsive">
+        <table class="table table-striped text-white">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Showtime</th>
+                    <th>Date</th>
+                    <th>Seats</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td class="text-white">{{ booking.user.username }}</td>
+                    <td class="text-white">{{ booking.showtime }}</td>
+                    <td class="text-white">{{ booking.show_date.date }}</td>
+                    <td class="text-white">{{ booking.user_seat_as_list|join:", " }}</td>
+                    <td class="text-white">${{ booking.total_price }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No bookings found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

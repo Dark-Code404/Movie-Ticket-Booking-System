@@ -1,20 +1,21 @@
 {% extends "base.html" %}
 
-{% block pagename %}
-<h1 data-aos="fade-up">Register</h1>
-{% endblock pagename %}
 
 {% block content %}
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong style="color: rgb(255, 0, 0);">{{ message }}</strong> 
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    {% endfor %}
-  {% endif %}
-
-  <form action="{% url 'register' %}" method="post">
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong style="color: rgb(255, 0, 0);">{{ message }}</strong> 
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+<div class="d-flex justify-content-center align-items-center vh-100 w-50">
+  <div class="col-md-4">
+      {% block pagename %}
+      <h1 data-aos="fade-up">Register</h1>
+      {% endblock pagename %}
+    <form action="{% url 'register' %}" method="post">
     {% csrf_token %}
     
     <div class="form-group">
@@ -62,4 +63,6 @@
     Already a user? <a href="{% url 'login' %}">Login</a>
     <br>
   </form>
+</div>
+</div>
 {% endblock content %}

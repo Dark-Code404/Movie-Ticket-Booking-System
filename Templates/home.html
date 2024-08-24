@@ -2,77 +2,122 @@
 {% block title %}Home{% endblock title %}
 
 {% block content %}
+
+<style>
+    .movie-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+        gap: 10px;
+        justify-items: center; /* Center align items horizontally */
+    }
+  
+    .movie-grid .card {
+        width: 100%; /* Ensure the card takes full width of its grid cell */
+        max-width: 300px; /* Set a max width to prevent it from stretching too wide */
+        min-height: 450px; 
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+  
+    .movie-section {
+        min-height: 600px; 
+    }
+  
+    .no-movies {
+        min-height: 50px; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @media (max-width: 576px) {
+        .card-img-top {
+            height: 200px;
+        }
+    }
+
+    @media (min-width: 576px) and (max-width: 768px) {
+        .card-img-top {
+            height: 250px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .card-img-top {
+            height: 300px;
+        }
+    }
+</style>
+
 {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong style="color: red;">{{ message }}</strong> 
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    {% endfor %}
-  {% endif %}
+  {% for message in messages %}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong style="color: red;">{{ message }}</strong> 
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+{% endif %}
+
+<br> <br> <br>
+
 <div class="container mt-5">
-    <!-- Search Bar -->
     <div class="row mb-5">
-        <div class="col-md-8 offset-md-2">
-            <form method="GET" action="{% url 'home' %}" class="d-flex">
-                <input 
-                    type="text" 
-                    name="search" 
-                    class="form-control me-2" 
-                    placeholder="Search for a movie..." 
-                    value="{{ request.GET.search }}"
-                >
-                <button class="btn btn-primary" type="submit">Search</button>
-            </form>
-        </div>
+      <div class="col-md-8 offset-md-2">
+        <form method="GET" action="{% url 'home' %}" class="d-flex">
+          <input 
+            type="text" 
+            name="search" 
+            class="form-control me-2" 
+            placeholder="Search for a movie..." 
+            value="{{ request.GET.search }}"
+          >
+          <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+      </div>
     </div>
-
+  
     <!-- Now Showing Section -->
-   
-    <section class="mb-5">
-        <h4 class="mb-4 text-uppercase font-weight-bold">Now Showing</h4>
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            
-            {% if now_showing %}
-                {% for movie in now_showing %}
-                    <div class="col">
-                        <div class="card border-0 rounded-3 shadow-lg">
-                            <img src="{{ movie.poster.url }}" class="card-img-top" alt="Movie Poster" style="object-fit: cover; height: 250px;">
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title mb-3 text-dark">{{ movie.name }}</h5>
-                                <p class="card-text mb-4 text-muted">{{ movie.description|truncatewords:15 }}</p>
-                                <a href="{% url 'showtime' movie.mid %}" class="btn btn-primary mt-auto">Book Showtimes</a>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p>No movies found for your search.</p>
-            {% endif %}
-        </div>
+    <section class="mb-5 movie-section">
+      <h4 class="mb-4 text-uppercase font-weight-bold">Now Showing</h4>
+      <div class="movie-grid">
+        {% if now_showing %}
+          {% for movie in now_showing %}
+            <div class="card border-0 rounded-3 shadow-lg">
+              <img src="{{ movie.poster.url }}" class="card-img-top" alt="Movie Poster" style="object-fit: cover;">
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title mb-3 text-dark">{{ movie.name }}</h5>
+                <p class="card-text mb-4 text-muted">{{ movie.description|truncatewords:8 }}</p>
+                <a href="{% url 'showtime' movie.mid %}" class="btn btn-primary mt-auto">Book Showtimes</a>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="no-movies">No movies found for your search.</div>
+        {% endif %}
+      </div>
     </section>
-
+  
     <!-- Upcoming Section -->
-    <section>
-        <h4 class="mb-4 text-uppercase font-weight-bold">Upcoming</h4>
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            {% if upcoming %}
-                {% for movie in upcoming %}
-                    <div class="col">
-                        <div class="card border-0 rounded-3 shadow-lg">
-                            <img src="{{ movie.poster.url }}" class="card-img-top" alt="Movie Poster" style="object-fit: cover; height: 250px;">
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title mb-3 text-dark">{{ movie.name }}</h5>
-                                <p class="card-text mb-4 text-muted">{{ movie.description|truncatewords:15 }}</p>
-                                <a href="{% url 'showtime' movie.mid %}" class="btn btn-outline-primary mt-auto">View Details</a>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p>No upcoming movies found for your search.</p>
-            {% endif %}
-        </div>
+    <section class="movie-section">
+      <h4 class="mb-4 text-uppercase font-weight-bold">Upcoming</h4>
+      <div class="movie-grid">
+        {% if upcoming_movies %}
+          {% for movie in upcoming_movies %}
+            <div class="card border-0 rounded-3 shadow-lg">
+              <img src="{{ movie.poster.url }}" class="card-img-top" alt="Movie Poster" style="object-fit: cover;">
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title mb-3 text-dark">{{ movie.name }}</h5>
+                <p class="card-text mb-4 text-muted">{{ movie.description|truncatewords:15 }}</p>
+                <a href="{% url 'showtime' movie.mid %}" class="btn btn-outline-primary mt-auto">View Details</a>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="no-movies">No upcoming movies found for your search.</div>
+        {% endif %}
+      </div>
     </section>
-</div>
+  </div>
+
 {% endblock content %}

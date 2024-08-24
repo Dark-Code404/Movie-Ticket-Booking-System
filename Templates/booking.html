@@ -16,16 +16,18 @@ Booking Confirmation
 
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-12 col-md-8 col-lg-6">
             <div class="card">
-                <div class="card-header bg-primary text-white">Booking Confirmation</div>
+                <div class="card-header bg-primary text-white text-center">
+                    Booking Confirmation
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Thank you for your booking!</h5>
-                    <p class="card-text">Movie: {{ booking.shows.movie.name }}</p>
-                    <p class="card-text">Showtime: {{ booking.shows.time }}</p>
-                    <p class="card-text">Seats: {{ booking.user_seat }}</p>
-                    <p class="card-text">Cinema: {{ booking.shows.cinema.name }}</p>
-                    <a href="{% url 'home' %}" class="btn btn-primary">Back to Home</a>
+                    <h5 class="card-title text-center">Thank you for your booking!</h5>
+                    <p class="card-text"><strong>Movie:</strong> {{ booking.shows.movie.name }}</p>
+                    <p class="card-text"><strong>Showtime:</strong> {{ booking.shows.time }}</p>
+                    <p class="card-text"><strong>Seats:</strong> {{ booking.user_seat }}</p>
+                    <p class="card-text"><strong>Cinema:</strong> {{ booking.shows.cinema.name }}</p>
+                    <a href="{% url 'home' %}" class="btn btn-primary d-block mx-auto">Back to Home</a>
                 </div>
             </div>
         </div>
