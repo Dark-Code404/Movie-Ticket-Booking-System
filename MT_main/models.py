@@ -18,7 +18,6 @@ class Cinemas(models.Model):
 class Actor(models.Model):
     name = models.CharField(max_length=100)
     birth_date = models.DateField(null=True, blank=True)
-    biography = models.TextField(null=True, blank=True)
     photo = models.ImageField(upload_to='actors/', null=True, blank=True)
 
     def __str__(self):
@@ -44,11 +43,10 @@ class Movies(models.Model):
     poster = models.ImageField(upload_to='movies', default="")
     genre = models.CharField(max_length=50, default="Action | Comedy | Romance")
     duration = models.CharField(max_length=10, default="2hr 45min")
-    rating = models.DecimalField(max_digits=3, decimal_places=1,default="4")
+    rating = models.CharField(max_length=5,null=True,blank=True,default="4")
     actors = models.ManyToManyField(Actor, related_name='movies', blank=True)
     director = models.ForeignKey(Director,on_delete=models.CASCADE,null=True,blank=True)
-    upcoming=models.BooleanField(default=False)
-    nowshowing=models.BooleanField(default=False)
+  
     
 
     def __str__(self):
@@ -72,11 +70,13 @@ class Screening(models.Model):
     sid = models.AutoField(primary_key=True)
     cinema = models.ForeignKey(Cinemas, on_delete=models.CASCADE, related_name='cinema_show')
     movie = models.ForeignKey(Movies, on_delete=models.CASCADE, related_name='movie_show')
-    available_date = models.ManyToManyField(ShowDate,)
+    available_date = models.ManyToManyField(ShowDate,blank=True)
     price = models.IntegerField()
     total_seats = models.IntegerField(default=100)
     available_seats = models.IntegerField(default=100)
-    time = models.ManyToManyField(ShowTime)
+    time = models.ManyToManyField(ShowTime,blank=True)
+    upcoming=models.BooleanField(default=False)
+    nowshowing=models.BooleanField(default=False)
 
     def __str__(self):
         date=','.join([format(date.date,'y-m-d') for date in self.available_date.all()])

@@ -12,8 +12,8 @@
     }
   
     .movie-grid .card {
-        width: 100%; /* Ensure the card takes full width of its grid cell */
-        max-width: 300px; /* Set a max width to prevent it from stretching too wide */
+        width: 100%;
+        max-width: 450px;
         min-height: 450px; 
         display: flex;
         flex-direction: column;
@@ -82,13 +82,13 @@
       <h4 class="mb-4 text-uppercase font-weight-bold">Now Showing</h4>
       <div class="movie-grid">
         {% if now_showing %}
-          {% for movie in now_showing %}
+          {% for screening in now_showing %}
             <div class="card border-0 rounded-3 shadow-lg">
-              <img src="{{ movie.poster.url }}" class="card-img-top" alt="Movie Poster" style="object-fit: cover;">
+              <img src="{{ screening.movie.poster.url }}" class="card-img-top" alt="Movie Poster" style="object-fit: cover;">
               <div class="card-body d-flex flex-column">
-                <h5 class="card-title mb-3 text-dark">{{ movie.name }}</h5>
-                <p class="card-text mb-4 text-muted">{{ movie.description|truncatewords:8 }}</p>
-                <a href="{% url 'showtime' movie.mid %}" class="btn btn-primary mt-auto">Book Showtimes</a>
+                <h5 class="card-title mb-3 text-dark">{{ screening.movie.name }}</h5>
+                <p class="card-text mb-4 text-muted">{{ screening.movie.description|truncatewords:10 }}</p>
+                <a href="{% url 'showtime' screening.movie.mid %}" class="btn btn-primary mt-auto">Book Showtimes</a>
               </div>
             </div>
           {% endfor %}
@@ -99,17 +99,17 @@
     </section>
   
     <!-- Upcoming Section -->
-    <section class="movie-section">
+    <section class="mb-5 movie-section">
       <h4 class="mb-4 text-uppercase font-weight-bold">Upcoming</h4>
       <div class="movie-grid">
         {% if upcoming_movies %}
-          {% for movie in upcoming_movies %}
+          {% for screening in upcoming_movies %}
             <div class="card border-0 rounded-3 shadow-lg">
-              <img src="{{ movie.poster.url }}" class="card-img-top" alt="Movie Poster" style="object-fit: cover;">
+              <img src="{{ screening.movie.poster.url }}" class="card-img-top" alt="Movie Poster" style="object-fit: cover;">
               <div class="card-body d-flex flex-column">
-                <h5 class="card-title mb-3 text-dark">{{ movie.name }}</h5>
-                <p class="card-text mb-4 text-muted">{{ movie.description|truncatewords:15 }}</p>
-                <a href="{% url 'showtime' movie.mid %}" class="btn btn-outline-primary mt-auto">View Details</a>
+                <h5 class="card-title mb-3 text-dark">{{ screening.movie.name }}</h5>
+                <p class="card-text mb-4 text-muted">{{ screening.movie.description|truncatewords:10 }}</p>
+                <a href="{% url 'showtime' screening.movie.mid %}" class="btn btn-outline-primary mt-auto">View Details</a>
               </div>
             </div>
           {% endfor %}

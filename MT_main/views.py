@@ -30,22 +30,20 @@ def admin_dashboard(request):
 
 
 def home(request):
-
     cinemas = Cinemas.objects.all()
 
     search_query = request.GET.get("search", "")
 
     if search_query:
-        now_showing = Movies.objects.filter(
-            nowshowing=True, name__icontains=search_query
+        now_showing = Screening.objects.filter(
+            nowshowing=True, movie__name__icontains=search_query
         )
-        upcoming_movies = Movies.objects.filter(
-            upcoming=True, name__icontains=search_query
+        upcoming_movies = Screening.objects.filter(
+            upcoming=True, movie__name__icontains=search_query
         )
     else:
-        
-        now_showing = Movies.objects.filter(nowshowing=True)
-        upcoming_movies = Movies.objects.filter(upcoming=True)
+        now_showing = Screening.objects.filter(nowshowing=True)
+        upcoming_movies = Screening.objects.filter(upcoming=True)
 
     context = {
         "cinemas": cinemas,
@@ -56,13 +54,12 @@ def home(request):
 
     return render(request, "home.html", context)
 
-
-
 def showtime(request, mid):
     movie = get_object_or_404(Movies, pk=mid)
     shows = Screening.objects.filter(movie=movie)
 
-    is_upcoming = movie.upcoming
+   
+    is_upcoming = shows.filter(upcoming=True).exists()
 
     seats_row = [
         "A",
@@ -80,8 +77,8 @@ def showtime(request, mid):
 
         if selected_date:
             try:
-                selected_date_obj = datetime.strptime(selected_date, "%Y-%m-%d").date
-                shows = shows.filter(available_date__date=selected_date)
+                selected_date_obj = datetime.strptime(selected_date, "%Y-%m-%d").date()
+                shows = shows.filter(available_date__date=selected_date_obj)
 
             except ValueError:
                 messages.error(request, "Invalid date format")
@@ -96,7 +93,6 @@ def showtime(request, mid):
             showtime_seats[showtime_id] = booked_seats
 
         else:
-
             for show in shows:
                 for slot in show.time.all():
                     bookings = Bookings.objects.filter(showtime=slot)
@@ -114,9 +110,7 @@ def showtime(request, mid):
     print(f"showtime seats : {showtime_seats} ")
     print(f"showtime id : {showtime_id} ")
 
-    return render(
-        request,
-        "showtime.html",
+    return render(request,"showtime.html",
         {
             "movie": movie,
             "available_dates": sorted(available_dates, key=lambda d: d.date),
@@ -130,6 +124,7 @@ def showtime(request, mid):
             "seats_column": seats_column,
         },
     )
+
 
 
 @login_required(login_url="/auth/login/")
