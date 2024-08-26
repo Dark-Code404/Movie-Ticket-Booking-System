@@ -61,10 +61,8 @@ def showtime(request, mid):
    
     is_upcoming = shows.filter(upcoming=True).exists()
 
-    seats_row = [
-        "A",
-    ]
-    seats_column = ["1", "2", "3", "4", "5"]
+    seats_row = ["A","B","C","D"]
+    seats_column = ["1", "2", "3", "4", "5","6","7","8","9","10"]
     selected_date = request.GET.get("date")
     showtime_id = request.GET.get("showtime_id")
 
