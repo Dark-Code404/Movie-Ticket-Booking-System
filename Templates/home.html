@@ -8,7 +8,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
         gap: 10px;
-        justify-items: center; /* Center align items horizontally */
+        justify-items: center;
     }
   
     .movie-grid .card {
@@ -77,9 +77,9 @@
       </div>
     </div>
   
-    <!-- Now Showing Section -->
+ 
     <section class="mb-5 movie-section">
-      <h4 class="mb-4 text-uppercase font-weight-bold">Now Showing</h4>
+      <h4 class="mb-4 text-uppercase font-weight-bold"><strong>Now Showing</strong></h4><br>
       <div class="movie-grid">
         {% if now_showing %}
           {% for screening in now_showing %}
@@ -98,9 +98,9 @@
       </div>
     </section>
   
-    <!-- Upcoming Section -->
+    
     <section class="mb-5 movie-section">
-      <h4 class="mb-4 text-uppercase font-weight-bold">Upcoming</h4>
+      <h4 class="mb-4 text-uppercase font-weight-bold"><strong>Upcoming</strong></h4><br>
       <div class="movie-grid">
         {% if upcoming_movies %}
           {% for screening in upcoming_movies %}

@@ -6,7 +6,6 @@
 
 
 <style>
-    /* Modal container styling */
     #trailerModal {
         display: none;
         position: fixed;
@@ -16,10 +15,10 @@
         width: 100%;
         height: 100%;
         overflow: auto;
-        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        background-color: rgba(0, 0, 0, 0.5); 
     }
 
-    /* Modal content styling */
+  
     #trailerModal .trailer-modal-content {
         background-color: #000;
         margin: 10% auto;
@@ -31,7 +30,7 @@
         border-radius: 8px;
     }
 
-    /* Close button styling */
+   
     #trailerModal .close {
         color: #fff;
        align-items: center;
@@ -46,7 +45,7 @@
         text-decoration: none;
     }
 
-    /* Iframe styling */
+  
     #trailerModal iframe {
         width: 100%;
         height: 725px;
@@ -81,11 +80,11 @@
             
             
             <div class="container mt-5">
-                <!-- Your existing content -->
+                
             
                 <button id="trailerButton">Watch Trailer</button><br><br>
             
-                <!-- Custom Modal -->
+               
                 <div id="trailerModal">
                     <div class="trailer-modal-content">
                         <span class="close">&times;</span>
@@ -153,7 +152,7 @@
     </div>
 
     {% if not is_upcoming %}
-        <!-- Available Dates -->
+       
         <h4 class="mt-4">Select a Date</h4>
         <div class="list-group mb-5">
             {% for date in available_dates %}
@@ -163,9 +162,9 @@
             {% endfor %}
         </div>
 
-        <!-- Showtimes -->
+      
         {% if selected_date %}
-        <h4 class="mt-4">Available Showtimes for {{ selected_date|date:"F j, Y" }}</h4>
+        <h4 class="mt-4">Available Showtimes {{ selected_date|date:"F j, Y" }}</h4><br>
         <div class="list-group">
             {% for show in shows %}
                 <div class="mb-3">
@@ -181,13 +180,13 @@
         </div>
         {% endif %}
     {% else %}
-        <!-- Upcoming Movie Details -->
+      
         <div class="alert alert-info mt-4" role="alert">
             This movie is upcoming and will be available for booking soon. Check back later for available dates and showtimes.
         </div>
     {% endif %}
 
-    <!-- Booking Modal -->
+  
     <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -289,10 +288,10 @@
             var inputShowtimeId = document.getElementById('showtime_id');
             inputShowtimeId.value = showtimeId;
     
-            // Load the seats dynamically without refreshing the page
+            
             loadSeats(showtimeId);
     
-            // Show the modal
+           
             var bootstrapModal = new bootstrap.Modal(bookingModal);
             bootstrapModal.show();
         });
@@ -302,11 +301,11 @@
 
 
         function loadSeats(showtimeId) {
-            // Make an AJAX call to get the booked seats for the selected showtime
+           
             fetch(`{{ request.path }}?showtime_id=${showtimeId}`)
                 .then(response => response.json())
                 .then(data => {
-                    // Update the seat selection UI based on the fetched data
+                    
                     updateSeatSelection(data.showtime_seats);
                 })
                 .catch(error => console.error('Error:', error));
