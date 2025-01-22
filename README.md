@@ -143,3 +143,5 @@ source venv/bin/activate
       
 ```
 
+
+[Screencast from 2024-08-26 22-55-07.webm](https://github.com/user-attachments/assets/2b72304a-10e0-4b52-84ce-b61b51db4a63)
